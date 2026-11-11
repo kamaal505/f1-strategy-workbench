@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "f1-strategy-workbench"
+version = "0.1.0"
+description = "Event-time reconstructed F1 strategy research workbench"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastf1==3.9.2", "numpy>=1.26,<3", "pandas>=2.2,<3", "scipy>=1.13,<2",
+  "pyarrow>=19,<24", "duckdb>=1.2,<2", "pydantic>=2.10,<3", "scikit-learn>=1.6,<2",
+  "typer>=0.15,<1", "plotly>=6,<7", "streamlit>=1.45,<2", "jinja2>=3.1,<4", "joblib>=1.4,<2",
+]
+
+[project.scripts]
+f1-strategy = "f1_strategy.cli:app"
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "pytest-socket>=0.7,<1", "hypothesis>=6,<7", "build>=1.2,<2"]
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/f1_strategy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/f1_strategy", "pyproject.toml", "uv.lock", "README.md", "docs", "tests", "streamlit_app.py"]

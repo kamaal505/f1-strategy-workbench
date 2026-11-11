@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "corpus_asset": "evaluation/corpus.json",
+  "partitions": {
+    "initialization": "2022 races",
+    "development": "2023 races, rounds 1 through 16",
+    "calibration": "2023 races, rounds 17 through 22",
+    "holdout": "2024 races"
+  },
+  "evaluation": {
+    "decision_lap_start": 10,
+    "decision_lap_step": 5,
+    "end_margin_laps": 5,
+    "horizons": [1, 3, 5, 10],
+    "seed": 2026
+  },
+  "holdout_policy": "The evaluation/frozen-settings.json reference is intentionally unresolved. An operator must replace it with the path to a pre-existing frozen settings manifest selected without holdout data before running holdout evaluation; no manifest or result is asserted here.",
+  "availability": "Schedule inclusion is not evidence of an acquired, authorized, or available timing snapshot."
+}

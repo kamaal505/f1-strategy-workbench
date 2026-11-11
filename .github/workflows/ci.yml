@@ -1,0 +1,40 @@
+name: Offline synthetic verification
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.11.28"
+          python-version: "3.12"
+      - run: uv sync --locked --dev
+      - run: uv run --locked pytest --disable-socket --allow-unix-socket
+      - run: uv build
+      - name: Installed wheel import proof
+        run: |
+          uv pip install --python .venv/bin/python --no-deps --reinstall dist/*.whl
+          .venv/bin/python -c 'from f1_strategy.data.snapshots import open_snapshot; from f1_strategy.deployment import materialize_packaged_demo; owner, root = materialize_packaged_demo(); print(root.name); owner.cleanup()'
+      - name: Synthetic CLI end-to-end
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --locked f1-strategy synthetic --output-root data/demo > synthetic-output.json
+          eval "$(uv run --locked python -c 'import json,shlex; d=json.load(open("data/demo/index.json")); print("\n".join(f"{k}={shlex.quote(str(d[v]))}" for k,v in [("SNAPSHOT","target_snapshot_id"),("MODEL","model_id"),("DRIVER","driver_number"),("LAP","completed_lap"),("SCENARIO","scenario_path"),("SPEC","training_spec_path")]))')"
+          uv run --locked f1-strategy train --root data/demo --spec "$SPEC" > synthetic-train.json
+          uv run --locked f1-strategy snapshot-check --root data/demo --snapshot "$SNAPSHOT" > synthetic-snapshot.json
+          uv run --locked f1-strategy replay --root data/demo --snapshot "$SNAPSHOT" --driver "$DRIVER" --lap "$LAP" > synthetic-replay.json
+          uv run --locked f1-strategy compare --root data/demo --snapshot "$SNAPSHOT" --model "$MODEL" --driver "$DRIVER" --lap "$LAP" --scenario "$SCENARIO" --draws 100 --output-dir synthetic-reports > synthetic-compare.json
+          ANALYSIS=$(uv run --locked python -c 'import json; print(json.load(open("synthetic-compare.json"))["analysis_path"])')
+          uv run --locked f1-strategy report --analysis "$ANALYSIS" --output-dir synthetic-html > synthetic-report.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: synthetic-output
+          path: |
+            synthetic-*.json
+            synthetic-html/

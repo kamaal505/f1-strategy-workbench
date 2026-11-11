@@ -1,0 +1,1 @@
+{"dry_condition_assumption":"dry","inventory_by_driver":{},"inventory_provenance":"assumed: one unused set per dry compound per driver","name":"Synthetic assumed green","rules_override":{"provenance":"assumed","source_reference":"Synthetic conditional rules"},"schema_version":1}

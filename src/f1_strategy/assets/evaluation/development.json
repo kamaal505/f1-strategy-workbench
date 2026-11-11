@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "corpus_asset": "evaluation/corpus.json",
+  "partition": "development",
+  "decision_lap_start": 10,
+  "decision_lap_step": 5,
+  "end_margin_laps": 5,
+  "horizons": [1, 3, 5, 10],
+  "seed": 2026,
+  "frozen_settings_manifest": null
+}

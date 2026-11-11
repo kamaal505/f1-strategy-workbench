@@ -1,0 +1,12 @@
+/data/
+/reports/
+/.venv/
+__pycache__/
+.pytest_cache/
+/dist/
+*.egg-info/
+.env
+*credentials*
+.streamlit/secrets.toml
+/.omp/
+/.hypothesis/

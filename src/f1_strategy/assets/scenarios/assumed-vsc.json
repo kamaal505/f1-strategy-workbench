@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Hypothetical virtual safety car","inventory_by_driver":{},"inventory_provenance":"assumed: one unused set per dry compound per driver","neutralisations":[{"kind":"VSC","start_after_leader_laps":1,"duration_laps":2}]}

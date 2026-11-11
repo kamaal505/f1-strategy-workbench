@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "status": "unresolved",
+  "corpus_asset": "evaluation/corpus.json",
+  "target_session_id": "2024-03-R",
+  "cutoff": "scheduled_race_start_utc",
+  "model_kind": "hierarchical",
+  "seed": 2026,
+  "calibration_policy": "latest_20_percent_minimum_two",
+  "note": "Descriptor only; resolve against verified local snapshots. No snapshot IDs are supplied."
+}
