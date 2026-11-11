@@ -1,6 +1,6 @@
 # 2023 Singapore Grand Prix — neutralisation and traffic
 
-**Status: no real model or analysis established.** Anonymous archive acquisition does not establish source retention or public display and full-lineage derivative permissions. Do not substitute a synthetic case study or invent results.
+**Status: real snapshot and offline prefix verified; strategy analysis pending.** Free acquisition needs no F1TV login. The before/active-neutralisation model comparisons, strategy reports and full analytical conclusions remain to be executed; public display and derivative permissions are separate.
 
 > Event-time reconstructed replay; historical corrections and original arrival times are not fully observable.
 
@@ -12,14 +12,18 @@ The [official race report](https://www.formula1.com/en/latest/article/sainz-hold
 
 Private acquisition and offline replay are verified for snapshot `a205207b8640d523a22b797a6c55f0533688a2284d0481825469950c0acde214`, driver 44 after lap 10, cutoff `4777594000000` ns. This verifies released-input boundaries, not yet the two neutralisation comparisons above.
 
+The recorded files live in the development machine’s private `data/free/` catalogue, not in the repository. The lap-10 smoke prefix is not a substitute for the two analytical selections above. See [local workflow](../local-workflow.md) for roots and as-of preparation.
+
 ## Reproduction after prerequisites
 
 ```sh
-# Only after confirming applicable source access and snapshot retention rights:
-uv run --locked f1-strategy ingest --year 2023 --round 15
-# Resolve prior actual snapshots into an as-of TrainingSpec; no invented IDs.
-uv run --locked f1-strategy train --spec "$ASOF_TRAINING_SPEC"
-uv run --locked f1-strategy compare --snapshot "$REAL_SNAPSHOT_ID" --model "$ASOF_MODEL_ID" --driver 55 --lap 20 --scenario "$REAL_SCENARIO" --seed 2026
+ROOT=data
+uv run --locked f1-strategy ingest --year 2023 --round 15 --root "$ROOT"
+# Ingest prior history and resolve evaluation/asof-2023-15-R.json first.
+uv run --locked f1-strategy train --root "$ROOT" --spec "$ASOF_TRAINING_SPEC"
+# Set IDs from stdout. Choose each DRIVER/LAP from released, supported prefixes;
+# do not assume a car already in the pit lane can make a new pit-now decision.
+uv run --locked f1-strategy compare --root "$ROOT" --snapshot "$REAL_SNAPSHOT_ID" --model "$ASOF_MODEL_ID" --driver "$DRIVER" --lap "$LAP" --scenario "$REAL_SCENARIO" --seed 2026
 uv run --locked f1-strategy report --analysis "$ANALYSIS_PATH" --output-dir reports
 ```
 

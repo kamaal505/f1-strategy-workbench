@@ -20,6 +20,10 @@ flowchart LR
 
 Source payloads preserve archive JSON bytes, not original receipt-time messages. Prefix views gate release timestamps before aggregation; retrospective audit fields are not forecasting inputs. Immutable snapshot identity covers behavior-affecting metadata, file hashes and versions. Offline replay never fetches the archive.
 
+`data/archive.py` owns bounded anonymous retrieval and decoding; `data/acquire.py` projects archive fields into the shared normalizer and publishes snapshots. Season commits are pinned, and `pace/corpus.py` resolves year/round names from the verified vendored schedule without a live calendar lookup. FastF1 is upstream processing provenance, not an installed acquisition dependency. No source credentials or authentication cache are needed.
+
+The source cutover changed the dependency lock. Packaged synthetic assets were regenerated; older private models must pass the current lock/library checks rather than acquire a compatibility alias.
+
 ## Public versus local
 
 Public is the default server mode. Local research requires server-side `F1_STRATEGY_MODE=local`; request/query parameters cannot enable it. Public visitors cannot select filesystem paths, URLs, artifacts, Python callables or training jobs. Only labelled synthetic data and explicitly authorized curated real races are eligible. Operator acquisition and fitting remain CLI workflows.
@@ -40,4 +44,6 @@ Public report downloads transfer authorized bytes directly in the page response 
 
 ## External launch prerequisites
 
-This directory began without a Git repository or remote. GitHub CLI access was available through the OS keyring, but the available Streamlit Community Cloud browser session showed **Sign in** and acceptance of Terms was required; no connected deployer consent was exercised. Anonymous archive access does not establish retention or full-lineage public display/model/report/distribution permission. Provider installation and an authorized public real-race browser proof remain unverified.
+The public [GitHub repository](https://github.com/kamaal505/f1-strategy-workbench) now exists. The available Streamlit Community Cloud browser session showed **Sign in** and required account/Terms consent; no connected deployer consent was exercised. No actual Cloud install or public app URL is verified.
+
+Free acquisition is no longer blocked by F1TV authentication: all 68 source races were acquired locally. Real as-of fitting, chronological model evaluation, full strategy case studies and actual-race UI proof still need execution. Anonymous archive access does not establish full-lineage public display/model/report/distribution permission. Those rights, connected Streamlit administration and provider/runtime/browser proof remain launch prerequisites; a synthetic app is not a real-race launch.

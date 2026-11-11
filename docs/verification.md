@@ -23,6 +23,14 @@ Python 3.12.13, uv 0.11.28, macOS arm64; existing `.venv` retained.
 - `uv build` produced wheel and source distribution. The regenerated wheel imported from `site-packages` with FastF1 absent, materialized its packaged synthetic snapshots/model, completed a 200-draw comparison and bounded report subprocess, returned 4,953,271 HTML bytes, and released the child slot and all leases.
 - The regenerated 1000-draw synthetic CLI comparison and self-contained HTML rendering completed. The current identities are below. No new browser or Cloud deployment verification is claimed.
 
+## Documentation refresh
+
+- Checked all 10 Markdown documents: 21 relative file links resolved, all 10 shell blocks passed `bash -n`, and both embedded Python blocks compiled.
+- Executed the documented demo-index shell extraction; IDs resolved and the referenced scenario/training files existed.
+- Exercised Spain’s as-of resolver against the existing `data/free/` corpus with network sockets disabled: 22 fitting events, six calibration events, cutoff `2023-06-04T13:00:00+00:00`. This resolved a specification; it did not fit a real model.
+- Actual CLI replay of the recorded Spain snapshot returned driver 44 after lap 20 at cutoff `5354336000000` ns. No new real-data model selection, holdout scoring or browser/Cloud proof was performed.
+
+
 ## Current synthetic decision
 
 This is **fictional timing**, not a real race or an accuracy benchmark.

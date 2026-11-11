@@ -2,6 +2,25 @@
 
 Snapshots are immutable, content-addressed Parquet publications under `snapshots/<sha256>/`. The identity includes the schema, session, stream origin, race start, scheduled distance, entry and event metadata, source identifiers, acquisition options, availability, quality findings, dependency and lock versions, and each sorted file path, row count and content hash. Acquisition time is an annotation and does not affect identity. The reader validates the manifest identity, event metadata digest, schemas, row counts, file hashes, required streams and confined member paths before exposing read-only Arrow tables. It rejects symlinks beneath the snapshot root. Identical publications reuse their identity.
 
+## Archive source and retained layout
+
+The acquisition adapter fetches anonymous, commit-pinned JSON from the TracingInsights season repositories. It does not install or authenticate FastF1. Source identity is `tracinginsights:YYYY-RR-R`; the manifest records the season commit/base URL, source endpoints, dependency versions and lock digest. Year/round names come from the verified vendored schedule, not a live calendar API.
+
+Each original JSON file is stored as one binary source-payload row with `url`, `sha256` and `json` columns:
+
+| Source member | Contents |
+|---|---|
+| `source/session_info.parquet` | Stream origin, source distance, race-start metadata and status streams |
+| `source/drivers.parquet` | Source entry metadata |
+| `source/session_laptimes.parquet` | Parallel per-driver lap/tyre/pit arrays, including unused audit fields |
+| `source/weather.parquet` | Independently timestamped weather observations |
+| `source/rcm.parquet` | Race-control messages |
+| `source/telemetry/<code>/<lap>.parquet` | Optional processed per-lap telemetry JSON |
+
+Canonical `laps`, `pit_events`, `weather`, `track_status`, `session_status` and `messages` are separate root-level Parquet tables. Literal missing markers such as `\"None\"` are decoded to canonical nulls while the original bytes remain intact. Entries use source `dn` where supplied, otherwise an unambiguous source lap `drv`/`dNum` join; no fixed driver-number lookup or final-classification order is substituted.
+
+An `available` telemetry table means source samples were retained, not that their absolute timestamps are known. Availability reasons survive publication when their status/count match the table, including partial downloads and unknown time anchors.
+
 ## Origins and release
 
 All canonical temporal fields use signed nanoseconds relative to FastF1's session stream origin (`t0_date`). `event_ns` and `release_ns` are nullable; original receipt times are unavailable. A completed lap is released at its estimated end, and pit entry and exit are separate events released at their own estimated times. Weather, track and session status are released at their source timestamps; race-control messages use their UTC message timestamps. Missing timestamps are not imputed. Canonical lap durations and sectors are seconds; lap, stint and tyre-age counts are nullable integers. Driver numbers are strings. Compounds not identified by the source are `UNKNOWN`, not inferred dry compounds. The lap table also retains final deletion and position for audit, not as replay features. Race status and messages are subject to historical corrections.

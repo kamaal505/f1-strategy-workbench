@@ -8,6 +8,14 @@ Replay is event-time reconstructed. Source historical corrections may remain ret
 
 Forecasts are conditional clean lap times. Strategy timing compares equal scheduled distance, not different-distance flag timestamps. Simulated pit losses, inventory, traffic, neutralisations and rival policies are assumptions, not observed counterfactual outcomes. Interval calibration of pace does not establish joint counterfactual strategy coverage.
 
+## Source observations and limitations
+
+Inputs now come from commit-pinned [TracingInsights archives](https://tracinginsights.com/analysis/download-raw-data/), covering the complete 2022–2024 race corpus without a paid source account. FastF1 describes upstream processing/time semantics, not a runtime dependency. The archive includes Jolpica/OpenF1-derived fields; it is not an original live-message record. [OpenF1](https://openf1.org/) alone starts in 2023 and would omit 2022.
+
+Lap duration and estimated crossing clocks can differ in this mixed-source archive. Preserve both and report mismatches; do not reconstruct a crossing as start plus a substituted duration. Tyre life includes prior use. Driver identity joins use source numbers/codes, not finishing order. Standalone weather timestamps are used instead of attached per-lap weather.
+
+Optional telemetry is merged/interpolated per-lap data with slice-relative clocks. Without a defensible absolute anchor, its event/release times stay null and timed replay excludes it. Source availability does not create tyre temperatures, actual fuel, remaining set inventory or verified event-specific rules. See [data contracts](data-contracts.md).
+
 ## Replay and conditional legality
 
 Every stream is gated before aggregation. Mounted tyres become observable at source-lap completion; pit entry/exit release independently. Final deletion/position fields are removed. Deletion and reinstatement messages require unambiguous driver/lap attribution. Approximate progress becomes stale after 1.5 recent typical laps without a crossing; stale absence is not retirement. Sectors are withheld without their own completion timestamps.
@@ -46,6 +54,10 @@ Training roles admit one immutable acquisition per distinct session; corrected c
 
 The HGB challenger learns event-chronological issued-forecast residual corrections and lag histories, not whole-event fitted residuals. Future recursion uses generated predictions; a planned stop resets its stint origin/history and uses hierarchical warm-up fallback. Matching hierarchical parameter replicates remain shared. Conditional quantiles supply piecewise-linear inverse-CDF marginals with linear tails, centered around the separately predicted mean correction; base three-lap blocks supply serial rank dependence, not a second noise source. Display, calibration and strategy sampling use that same distributional assumption. ML parameter uncertainty is explicitly **not bootstrapped**.
 
-2022 initializes fitting; 2023 rounds 1–16 select on expanding development folds; rounds 17–22 are disjoint final calibration; all 2024 is untouched holdout. Every transitive frozen-model source is checked, so an earlier 2024 race cannot enter later holdout scoring. Same-stint clean targets determine evaluation eligibility only; stint-ending censoring is informative. Errors, pinball loss, widths and empirical coverage are race-macro summaries with event-block paired uncertainty, not lap-wise significance.
+2022 initializes fitting; 2023 rounds 1–16 select on expanding development folds; rounds 17–22 are disjoint final calibration; all 2024 is reserved for holdout. Every transitive frozen-model source is checked, so an earlier 2024 race cannot enter later holdout scoring. Same-stint clean targets determine evaluation eligibility only; stint-ending censoring is informative. Errors, pinball loss, widths and empirical coverage are race-macro summaries with event-block paired uncertainty, not lap-wise significance.
 
-Hierarchical remains the configured default. HGB may replace it only after development evidence meets the specified 5% one-lap MAE, coverage-error and compound-group gates. **No actual-data winner has been selected here:** the development run recorded 0 scored events out of 16 missing races. No valid frozen-settings manifest exists, so 2024 holdout has not been inspected. Synthetic fit/load/forecast proof does not establish real-race accuracy or a challenger victory.
+Hierarchical remains the configured default, not an empirically selected real-data winner. HGB may replace it only after development evidence meets the 5% one-lap MAE, coverage-error and compound-group gates.
+
+**Current evidence:** all 68 real source races are now available locally, but real-data development/calibration has not been rerun and no valid frozen-settings manifest or actual-data champion has been established. The earlier pre-acquisition development attempt scored zero of 16 events because its inputs were missing; that is historical failure evidence, not the current source-availability state.
+
+Downloading/validating 2024 inputs and the Australia prefix smoke check were not holdout scoring, model selection or retuning. Predictive holdout evaluation remains pending and must wait for frozen settings. Synthetic fit/load/forecast proof establishes neither real-race accuracy nor a challenger victory.
