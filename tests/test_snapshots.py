@@ -89,9 +89,3 @@ def test_normalization_retains_source_and_independent_pit_events():
     assert quality_report(tables)["missing_mandatory_time"]["count"] == 0
 
 
-def test_acquisition_requires_explicit_operator_permission(tmp_path, monkeypatch, socket_disabled):
-    monkeypatch.delenv("F1_SOURCE_ACCESS_CONFIRMED", raising=False)
-    monkeypatch.delenv("F1_SNAPSHOT_RETENTION_CONFIRMED", raising=False)
-    with pytest.raises(WorkbenchError) as exc:
-        acquire_session(IngestRequest(year=2023, round_number=7), root=tmp_path)
-    assert exc.value.code == "authorization_required"

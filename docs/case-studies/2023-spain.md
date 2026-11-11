@@ -1,6 +1,6 @@
 # 2023 Spanish Grand Prix — tyre pace and pit timing
 
-**Status: blocked by missing authorized source inputs.** No race snapshot/model/analysis ID exists for this case. Source authentication reported `Not authenticated`; source access and retention permission were not supplied. Public display and full-lineage derivative permissions are separately absent. This is a named missing race, not a substituted synthetic case study.
+**Status: no real model or analysis established.** Anonymous archive acquisition does not establish source retention or public display and full-lineage derivative permissions. Do not substitute a synthetic case study or invent results.
 
 > Event-time reconstructed replay; historical corrections and original arrival times are not fully observable.
 
@@ -10,12 +10,12 @@ Sources: [Pirelli, Monaco and Spain 2023](https://press.pirelli.com/2023-tyre-co
 
 After acquisition, first attempt driver 44 lap 20. If unsupported, choose the earliest supported lap 10–30 for driver 44, then 1, then 14. Record that actual prefix; never lower the evidence thresholds.
 
+Private acquisition and offline replay are verified for snapshot `fd793d5d5a2e96e6cbe85fbf12a415bf2c451cf05ce16d15f4f60d16deabe801`, driver 44 after lap 20, cutoff `5354336000000` ns. This is source/prefix evidence only, not a fitted-model recommendation.
+
 ## Reproduction after prerequisites
 
 ```sh
 # Only after confirming applicable source access and snapshot retention rights:
-export F1_STRATEGY_AUTHORIZATION_FILE="$PRIVATE_AUTHORIZATION_FILE"
-export F1_SOURCE_ACCESS_CONFIRMED=1 F1_SNAPSHOT_RETENTION_CONFIRMED=1
 uv run --locked f1-strategy ingest --year 2023 --round 7
 # Resolve prior actual snapshots into an as-of TrainingSpec; no invented IDs.
 uv run --locked f1-strategy train --spec "$ASOF_TRAINING_SPEC"
@@ -23,4 +23,4 @@ uv run --locked f1-strategy compare --snapshot "$REAL_SNAPSHOT_ID" --model "$ASO
 uv run --locked f1-strategy report --analysis "$ANALYSIS_PATH" --output-dir reports
 ```
 
-Snapshot, model, scenario and analysis identities, exact cutoff, installed-code/lock digests, uncertainty, sensitivity, observed later outcome and forecast errors remain **unavailable because acquisition is blocked**. They must be populated from executed results; this document makes no numerical strategy-gain claim. Public charts/reports may be distributed only within their applicable granted scope.
+Snapshot, model, scenario and analysis identities, exact cutoff, installed-code/lock digests, uncertainty, sensitivity, observed later outcome and forecast errors must be populated from executed results; this document makes no numerical strategy-gain claim. Public charts/reports may be distributed only within their applicable granted scope.

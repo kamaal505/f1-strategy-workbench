@@ -25,7 +25,7 @@ def demo(tmp_path_factory):
 
 def authorization(**overrides):
     now = datetime.now(timezone.utc)
-    args = dict(source_ids=('fastf1:2023-07-R',), session_ids=('2023-07-R',),
+    args = dict(source_ids=('tracinginsights:2023-07-R',), session_ids=('2023-07-R',),
                 scopes=('public_display', 'model_server_use', 'derived_report_download'),
                 expires_utc=now + timedelta(hours=1), confirmed_utc=now - timedelta(hours=1),
                 permission_reference_id='operator-reference')
@@ -34,7 +34,7 @@ def authorization(**overrides):
 
 
 def test_authorization_full_sources_and_synthetic_labels():
-    real = [{'session_id': '2023-07-R', 'source_ids': ['fastf1:2023-07-R'], 'synthetic': False}]
+    real = [{'session_id': '2023-07-R', 'source_ids': ['tracinginsights:2023-07-R'], 'synthetic': False}]
     authorize_lineage(real, ('public_display',), authorizations=(authorization(),))
     for records, scopes, lineage in [
         ((), ('public_display',), real),
@@ -43,13 +43,42 @@ def test_authorization_full_sources_and_synthetic_labels():
         ((authorization(),), ('public_asset_distribution',), real),
         ((authorization(scopes=('public_display',)),), ('model_server_use',), real),
         ((authorization(scopes=('public_display',)),), ('derived_report_download',), real),
-        ((authorization(),), ('public_display',), real + [{'session_id':'2023-15-R','source_ids':['fastf1:2023-15-R'],'synthetic':False}]),
+        ((authorization(),), ('public_display',), real + [{'session_id':'2023-15-R','source_ids':['tracinginsights:2023-15-R'],'synthetic':False}]),
         ((), ('public_display',), [{'session_id':'2023-07-R','source_ids':['synthetic:fake'],'synthetic':True}]),
-        ((), ('public_display',), [{'session_id':'SYN-2023-07-R','source_ids':['fastf1:2023-07-R'],'synthetic':True}]),
+        ((), ('public_display',), [{'session_id':'SYN-2023-07-R','source_ids':['tracinginsights:2023-07-R'],'synthetic':True}]),
     ]:
         with pytest.raises(WorkbenchError):
             authorize_lineage(lineage, scopes, authorizations=records)
     authorize_lineage([{'session_id':'SYN-2023-07-R','source_ids':['synthetic:v1:SYN-2023-07-R'],'synthetic':True}], ('public_display',), authorizations=())
+
+
+def test_hosted_ingest_checks_permissions_and_isolates_child(tmp_path, monkeypatch):
+    lineage = [{'session_id': '2023-07-R', 'source_ids': ['tracinginsights:2023-07-R'], 'synthetic': False}]
+    payload = {'year': 2023, 'round_number': 7}
+    coordinator = Coordinator(tmp_path)
+    for key in ('F1_USERNAME', 'F1_PASSWORD', 'FASTF1_AUTH_METHOD',
+                'F1_SOURCE_ACCESS_CONFIRMED', 'F1_SNAPSHOT_RETENTION_CONFIRMED',
+                'F1_STRATEGY_AUTHORIZATION_FILE'):
+        monkeypatch.setenv(key, 'private-value')
+
+    class ChildStarted(Exception):
+        pass
+
+    def intercept(*args, **kwargs):
+        assert not any(key in kwargs['env'] for key in (
+            'F1_USERNAME', 'F1_PASSWORD', 'FASTF1_AUTH_METHOD',
+            'F1_SOURCE_ACCESS_CONFIRMED', 'F1_SNAPSHOT_RETENTION_CONFIRMED',
+            'F1_STRATEGY_AUTHORIZATION_FILE'))
+        raise ChildStarted
+
+    monkeypatch.setattr(subprocess, 'Popen', intercept)
+    for scopes in ((), ('source_access',), ('snapshot_retention',)):
+        records = (authorization(scopes=scopes),) if scopes else ()
+        with pytest.raises(WorkbenchError):
+            coordinator.run_job('ingest', payload, source_lineage=lineage, authorizations=records)
+    with pytest.raises(ChildStarted):
+        coordinator.run_job('ingest', payload, source_lineage=lineage,
+                            authorizations=(authorization(scopes=('source_access', 'snapshot_retention')),))
 
 
 def test_registry_rejects_untrusted_paths_and_manifests(tmp_path):
@@ -145,7 +174,7 @@ def test_denied_catalog_never_reads_parquet(demo, tmp_path, monkeypatch):
     shutil.copytree(root / 'models', tmp_path / 'models')
     source = root / 'snapshots' / index['target_snapshot_id']
     manifest = json.loads((source / 'manifest.json').read_bytes())
-    manifest.update(session_id='2023-07-R', synthetic=False, source_ids=['fastf1:2023-07-R'])
+    manifest.update(session_id='2023-07-R', synthetic=False, source_ids=['tracinginsights:2023-07-R'])
     sid = digest(identity_document(manifest))
     manifest['snapshot_id'] = sid
     destination = tmp_path / 'snapshots' / sid

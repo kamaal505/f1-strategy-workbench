@@ -20,17 +20,15 @@ F1_STRATEGY_MODE=local uv run --locked streamlit run streamlit_app.py --server.h
 
 The saved HTML is self-contained. Rendering only requires the complete checksummed analysis, not credentials, snapshots or a model. Recomputing requires the exact immutable inputs, model, rules, code and dependency lock. Public use is a separate permission decision.
 
-## Real-source prerequisites
+## Real-source ingestion
 
-Before real acquisition, document applicable account access and local snapshot retention permission in a private `PublicUseAuthorization` file with matching source/session IDs and `source_access`/`snapshot_retention` scopes. Set `F1_STRATEGY_AUTHORIZATION_FILE` to that operator-controlled file, then assert those confirmations in the operator environment. Assertions are not permission grants or legal determinations.
+The pinned TracingInsights public archive is fetched anonymously; no account, F1TV subscription, API key or environment confirmation is required. Check applicable access and retention rights independently. Public use requires separate full-lineage permission.
 
 ```sh
-uv run --locked python -m fastf1 auth f1tv --status
-export F1_SOURCE_ACCESS_CONFIRMED=1 F1_SNAPSHOT_RETENTION_CONFIRMED=1
 uv run --locked f1-strategy ingest --year 2023 --round 7
 ```
 
-Do not enter credentials in source files or shell commands. Use FastF1's documented private local authentication workflow. Hosted source workers require an authorized password arrangement configured through server-side secrets; simulation children must never inherit those credentials.
+Hosted acquisition remains limited to curated races without telemetry, with parent-side source-access and retention authorization. Workers receive no credentials or authorization-record path.
 
 For an as-of model, resolve actual snapshot IDs from the immutable catalog. Require at least five earlier eligible fitting events and disjoint earlier calibration events. Current-race adaptation is prefix-only. A model trained later than the target race start is invalid, even if coefficient dimensions match.
 

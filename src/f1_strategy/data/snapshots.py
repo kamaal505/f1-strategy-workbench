@@ -33,7 +33,10 @@ def publish_snapshot(*, root: Path, metadata: dict, tables: dict[str, pa.Table])
             path.parent.mkdir(parents=True, exist_ok=True)
             pq.write_table(table, path, compression="zstd")
             entries.append(FileEntry(path=member, sha256=file_digest(path), rows=table.num_rows).model_dump(mode="json"))
-            availability[name] = Availability(status="available" if table.num_rows else "empty", rows=table.num_rows).model_dump(mode="json")
+            status = "available" if table.num_rows else "empty"
+            supplied = availability.get(name, {})
+            reason = supplied.get("reason") if supplied.get("status") == status and supplied.get("rows") == table.num_rows else None
+            availability[name] = Availability(status=status, reason=reason, rows=table.num_rows).model_dump(mode="json")
         for required in ("laps", "track_status", "session_status"):
             if required not in tables or tables[required].num_rows == 0:
                 raise WorkbenchError("missing_stream", f"Required stream {required} missing or empty")

@@ -6,8 +6,7 @@ The installable `f1_strategy` package owns acquisition, immutable snapshots, rep
 
 ```mermaid
 flowchart LR
-  A[Operator acquisition] --> C[Mutable FastF1 cache]
-  A --> S[Immutable Parquet snapshot]
+  A[Anonymous archive acquisition] --> S[Immutable Parquet snapshot]
   S --> R[Cutoff-bounded replay]
   S --> F[Earlier-event offline fitting]
   F --> M[Verified model bundle]
@@ -19,7 +18,7 @@ flowchart LR
   U --> D
 ```
 
-Source streams preserve historical returned data, not original receipt-time messages. Prefix views gate release timestamps before aggregation; retrospective audit fields are not forecasting inputs. Immutable snapshot identity covers behavior-affecting metadata, file hashes and versions. The separate mutable FastF1 cache is never an offline replay fallback.
+Source payloads preserve archive JSON bytes, not original receipt-time messages. Prefix views gate release timestamps before aggregation; retrospective audit fields are not forecasting inputs. Immutable snapshot identity covers behavior-affecting metadata, file hashes and versions. Offline replay never fetches the archive.
 
 ## Public versus local
 
@@ -41,4 +40,4 @@ Public report downloads transfer authorized bytes directly in the page response 
 
 ## External launch prerequisites
 
-This directory began without a Git repository or remote. FastF1 authentication reported **Not authenticated**; no source username/password or authorization file was configured. GitHub CLI access was available through the OS keyring, but the available Streamlit Community Cloud browser session showed **Sign in** and acceptance of Terms was required; no connected deployer consent was exercised. Source access/retention and full-lineage public display/model/report/distribution permission remain separate prerequisites. Synthetic operation does not satisfy actual-race launch.
+This directory began without a Git repository or remote. GitHub CLI access was available through the OS keyring, but the available Streamlit Community Cloud browser session showed **Sign in** and acceptance of Terms was required; no connected deployer consent was exercised. Anonymous archive access does not establish retention or full-lineage public display/model/report/distribution permission. Provider installation and an authorized public real-race browser proof remain unverified.

@@ -1,6 +1,6 @@
 # F1 strategy workbench
 
-Run synthetic decision replay, fit as-of pace models, compare pit/stay strategies and export offline HTML through a shared CLI and Streamlit app. The historical research domain is **2022–2024 dry Grand Prix race sessions**; sprint sessions, wet forecasting and red-flag/restart simulation are unsupported. Actual-race acquisition, evaluation, case studies and public launch remain gated by source rights and account access.
+Run synthetic decision replay, fit as-of pace models, compare pit/stay strategies and export offline HTML through a shared CLI and Streamlit app. The historical research domain is **2022–2024 dry Grand Prix race sessions**; sprint sessions, wet forecasting and red-flag/restart simulation are unsupported. Actual-race research remains subject to source quality and applicable rights; public launch requires additional authorization.
 
 > Event-time reconstructed replay; historical corrections and original arrival times are not fully observable.
 
@@ -11,7 +11,11 @@ uv run --locked f1-strategy snapshot-list --root data/demo
 uv run --locked f1-strategy snapshot-check --root data/demo --snapshot <snapshot_id>
 ```
 
-Uses the existing Python 3.12 environment. FastF1 3.9.2 real acquisition requires its documented source account access; a subscription does not grant public-display or redistribution permission. No real observations, learned artifacts or reports may be publicly enabled without applicable full-lineage authorization. Default public operation is labelled synthetic only. Public real-race launch additionally needs an operator-owned GitHub repository and connected Streamlit deployer with admin access.
+Uses the existing Python 3.12 environment. Anonymous local ingestion uses the [TracingInsights archive](https://tracinginsights.com/analysis/download-raw-data/), with no F1TV subscription, login or API key. The archive covers the 68 races in 2022–2024 and combines upstream FastF1, Jolpica and OpenF1-derived fields. [OpenF1](https://openf1.org/) offers free historical data from 2023 onward, but does not cover the full 2022 season. Source availability and MIT code licences do not grant F1 data redistribution permission. No real observations, learned artifacts or reports may be publicly enabled without applicable full-lineage authorization. Default public operation is labelled synthetic only. Public real-race launch additionally needs an operator-owned GitHub repository and connected Streamlit deployer with admin access.
+
+```sh
+uv run --locked f1-strategy ingest --year 2023 --round 7
+```
 
 ## Shared CLI and app
 

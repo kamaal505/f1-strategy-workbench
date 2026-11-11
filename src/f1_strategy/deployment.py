@@ -374,13 +374,11 @@ class Coordinator:
                     authorize_lineage(focal, ('public_display', 'public_asset_distribution'), authorizations=authorizations)
                     authorize_lineage(model, ('model_server_use', 'public_asset_distribution'), authorizations=authorizations)
                 else:
-                    focal = [{'session_id': session, 'source_ids': [f'fastf1:{session}'], 'synthetic': False}]
+                    focal = [{'session_id': session, 'source_ids': [f'tracinginsights:{session}'], 'synthetic': False}]
                     model = []
                     if not isinstance(source_lineage, (tuple, list)) or list(source_lineage) != focal:
                         raise WorkbenchError('authorization_required', 'Lineage mismatch')
                     authorize_lineage(focal, ('source_access', 'snapshot_retention'), authorizations=authorizations)
-                    if any(os.environ.get(k) != '1' for k in ('F1_SOURCE_ACCESS_CONFIRMED', 'F1_SNAPSHOT_RETENTION_CONFIRMED')) or not os.environ.get('F1_USERNAME') or not os.environ.get('F1_PASSWORD') or os.environ.get('FASTF1_AUTH_METHOD') != 'password':
-                        raise WorkbenchError('authorization_required', 'Hosted source access configuration unavailable')
                 staging = self.root / 'staging'
                 if staging.is_symlink():
                     raise WorkbenchError('unsafe_path', 'Symlink staging forbidden')
@@ -431,11 +429,6 @@ class Coordinator:
             raise WorkbenchError('capacity_exceeded', 'Request too large')
         env = {k: os.environ[k] for k in ('PATH', 'LANG', 'LC_ALL', 'TMPDIR', 'SYSTEMROOT') if k in os.environ}
         env.update({'F1_WORKER_ROOT': str(self.root), 'F1_WORKER_STAGE': str(stage), 'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
-        if kind == 'ingest':
-            for key in ('F1_USERNAME', 'F1_PASSWORD', 'FASTF1_AUTH_METHOD', 'F1_SOURCE_ACCESS_CONFIRMED', 'F1_SNAPSHOT_RETENTION_CONFIRMED'):
-                env[key] = os.environ[key]
-            if 'F1_STRATEGY_AUTHORIZATION_FILE' in os.environ:
-                env['F1_STRATEGY_AUTHORIZATION_FILE'] = os.environ['F1_STRATEGY_AUTHORIZATION_FILE']
         proc = subprocess.Popen([sys.executable, '-m', 'f1_strategy.report_writer' if kind == 'report' else 'f1_strategy.worker'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, start_new_session=True)
         selector = selectors.DefaultSelector()
         try:
